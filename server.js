@@ -27,7 +27,12 @@ const port = process.env.PORT;
 // ========================== CORS Setup =========================== //
 
 const corsOptions = {
-    origin: ['https://www.svahpl.com', 'https://admin-svah.vercel.app', 'https://www.svahpl.in'],
+    origin: [
+        'https://www.svahpl.com',
+        'https://admin-svah.vercel.app',
+        'https://www.svahpl.in',
+        'https://admin-indian-panel.vercel.app',
+    ],
     credentials: true,
     methods: 'GET, POST, DELETE, PATCH, HEAD, PUT, OPTIONS',
     allowedHeaders: [
@@ -77,14 +82,13 @@ app.use(cookieParser());
 app.use(express.static('/tmp', { index: false }));
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
-
 export const instance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 app.get('/', (req, res) => {
-    return res.send(`SVAH Agros & Herbs Indian Server ready to serve on: https://indian-backend-app.vercel.app `);
+    return res.send(`SVAH Indian Server is ready!`);
 });
 
 app.use('/api/auth', userRouter);
@@ -97,7 +101,7 @@ app.use('/api/wishlist', WishlistRouter);
 app.use('/api/form', formRouter);
 app.use('/api/charge', deliveryRouter);
 app.use('/api/comment', commentRouter);
-app.use('/api/razorpay', razorPayRouter)
+app.use('/api/razorpay', razorPayRouter);
 
 app.get('/api/protected', ClerkExpressRequireAuth(), async (req, res) => {
     const userId = req.auth.userId;
