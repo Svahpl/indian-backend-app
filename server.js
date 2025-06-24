@@ -84,7 +84,7 @@ export const instance = new Razorpay({
 });
 
 app.get('/', (req, res) => {
-    return res.send(`This is Svah's Backend Server!`);
+    return res.send(`SVAH Agros & Herbs Indian Server ready to serve on: https://indian-backend-app.vercel.app `);
 });
 
 app.use('/api/auth', userRouter);
