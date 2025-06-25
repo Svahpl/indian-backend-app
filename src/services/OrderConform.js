@@ -311,21 +311,18 @@ const orderConfirmationTemplate = (customerName, orderNumber, orderDate, totalAm
       <div class="steps">
         <p>✅ <strong>Order Processing:</strong> We're carefully preparing your items</p>
         <p>📦 <strong>Quality Check:</strong> Each product undergoes rigorous quality testing</p>
-        <p>🚛 <strong>Dispatch:</strong> Your order will be shipped within 24-48 hours</p>
-        <p>📱 <strong>Tracking:</strong> You'll receive tracking details via SMS & email</p>
       </div>
     </div>
 
-    <div class="action-buttons">
-      <a href="#" class="btn btn-primary">📱 Track Your Order</a>
-      <a href="#" class="btn btn-secondary">🛍️ Shop More</a>
-    </div>
+   <div class="action-buttons">
+      <a href="svahpl.in" class="btn btn-secondary">🛍️ Shop More</a>
+     </div>
   </div>
 
   <div class="footer">
     <p>Questions about your order? We're here to help! 💬</p>
-    <p class="support-info">📞 Customer Support: +91-XXXXXXXXXX | 📧 support@shreevenkateswara.com</p>
-    <p>© 2024 Shree Venkateswara Agros and Herbs. Natural wellness delivered with love.</p>
+    <p class="support-info">📞 Customer Support: 📧svahpl@gmail.com</p>
+    <p>© 2025 Shree Venkateswara Agros and Herbs. Natural wellness delivered with love.</p>
   </div>
 </body>
 </html>`;
