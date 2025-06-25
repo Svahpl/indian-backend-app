@@ -144,12 +144,13 @@ export const EmailByAdmin = async (req, res) => {
 };
 
 export const getUserByClerkId = async (req, res) => {
-    const { clerkId } = req.params;
+    const { emailId } = req.params;
     try {
-        if (!clerkId) return res.status(404).json({ error: 'Clerk ID is required' });
-        const user = await User.find({ clerkUserId: clerkId });
+        if (!emailId) return res.status(404).json({ error: 'Clerk ID is required' });
+        const user = await User.find({ Email: emailId });
         return res.status(200).json({ user });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ error });
     }
 };
