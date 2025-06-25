@@ -27,7 +27,7 @@ export const addItemToWishList = async (req, res) => {
         );
 
         if (alreadyInWishlist) {
-            return res.status(400).json({ success: false, message: "Product already in wishlist" });
+            return res.status(409).json({ success: false, message: "Product already in wishlist" });
         }
 
         // 4. Add product to wishlist

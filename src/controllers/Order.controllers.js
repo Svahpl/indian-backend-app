@@ -415,14 +415,8 @@ export const cancelOrder = async (req, res) => {
 };
 export const indOrder = async (req, res) => {
     try {
-        let {
-            user,
-            phoneNumber,
-            shippingAddress,
-            items,
-            expectedDelivery,
-            razorpayOrderId,
-        } = req.body;
+        let { user, phoneNumber, shippingAddress, items, expectedDelivery, razorpayOrderId } =
+            req.body;
 
         // 🔄 Normalize items
         if (!Array.isArray(items)) {
@@ -431,7 +425,7 @@ export const indOrder = async (req, res) => {
             } else {
                 return res.status(400).json({
                     success: false,
-                    message: "Items should be an array or a valid object.",
+                    message: 'Items should be an array or a valid object.',
                 });
             }
         }
@@ -440,7 +434,7 @@ export const indOrder = async (req, res) => {
         if (!user || !phoneNumber || !shippingAddress || !expectedDelivery || items.length === 0) {
             return res.status(400).json({
                 success: false,
-                message: "All fields are required!",
+                message: 'All fields are required!',
             });
         }
 
@@ -468,23 +462,20 @@ export const indOrder = async (req, res) => {
         const totalWeight = quantity * weightPerUnit;
         const productPrice = productFound.price;
         const productTotal = productPrice * totalWeight;
-        const totalAmount = productTotal; 
+        const totalAmount = productTotal;
 
-        console.log("💡 Debug: qty =", quantity);
-        console.log("💡 Debug: weight per unit =", weightPerUnit);
-        console.log("💡 Debug: product price (from DB) =", productPrice);
-        console.log("💡 Debug: total weight =", totalWeight);
-        console.log("💡 Debug: productTotal =", productTotal);
-
+        console.log('💡 Debug: qty =', quantity);
+        console.log('💡 Debug: weight per unit =', weightPerUnit);
+        console.log('💡 Debug: product price (from DB) =', productPrice);
+        console.log('💡 Debug: total weight =', totalWeight);
+        console.log('💡 Debug: productTotal =', productTotal);
 
         // ✅ Set payment status
         let paymentStatus = 'Pending';
-        if (razorpayOrderId) {
-                paymentStatus = 'Success';
-        }
 
         // ✅ Create order
         const order = await Order.create({
+            rzpId: razorpayOrderId,
             user,
             userName: userFound.FullName,
             userEmail: userFound.Email,
@@ -505,7 +496,6 @@ export const indOrder = async (req, res) => {
             totalAmount,
             paymentStatus,
             expectedDelivery,
-            rzpId: razorpayOrderId,
         });
 
         // 🧾 Reduce stock
@@ -536,27 +526,26 @@ export const indOrder = async (req, res) => {
             userFound.FullName,
             userFound.Email,
             'Order Confirmation - Shree Venkateswara Agros and Herbs',
-            orderData
+            orderData,
         );
 
         await orderConfirmationEmail(
             userFound.FullName,
             'svahpl1@gmail.com',
             'Order Confirmation - Shree Venkateswara Agros and Herbs',
-            orderData
+            orderData,
         );
 
         return res.status(200).json({
             success: true,
-            message: "Order Placed Successfully!",
+            message: 'Order Placed Successfully!',
             orderId: order._id,
         });
-
     } catch (error) {
-        console.error("🔥 INR Order Creation Error:", error);
+        console.error('🔥 INR Order Creation Error:', error);
         res.status(500).json({
             success: false,
-            message: error.message || "Internal Server Error",
+            message: error.message || 'Internal Server Error',
         });
     }
 };
