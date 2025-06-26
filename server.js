@@ -65,7 +65,7 @@ const devCorsOptions = {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors(devCorsOptions));
+app.use(cors(corsOption));
 //
 
 // ========================== IMPORTANT: Webhook Route =========================== //
