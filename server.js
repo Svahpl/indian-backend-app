@@ -20,6 +20,7 @@ import { commentRouter } from './src/router/comment.router.js';
 import Razorpay from 'razorpay';
 import { razorPayRouter } from './src/router/razorpay.router.js';
 import { inddelRouter } from './src/router/Ind-del.router.js';
+import { saleRouter } from './src/router/ind-sale.router.js';
 
 dotenv.config();
 const app = express();
@@ -64,7 +65,7 @@ const devCorsOptions = {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors(corsOptions));
+app.use(cors(corsOption));
 //
 
 // ========================== IMPORTANT: Webhook Route =========================== //
@@ -99,6 +100,7 @@ app.use('/api/charge', deliveryRouter);
 app.use('/api/indcharge',inddelRouter)
 app.use('/api/comment', commentRouter);
 app.use('/api/razorpay', razorPayRouter);
+app.use('/api/sale',saleRouter)
 
 
 app.get('/api/protected', ClerkExpressRequireAuth(), async (req, res) => {
