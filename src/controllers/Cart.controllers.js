@@ -412,7 +412,7 @@ export const createCartOrder = async (req, res) => {
         }
 
         console.log('Debug Shipping Cost', shippingCost);
-        const adminEmail = "svahpl1@gmail.com"
+        const adminEmail = 'svahpl1@gmail.com';
         const backendTotal = backendProductTotal + shippingCost;
 
         console.log('Debug Backend Total', backendTotal);
@@ -543,7 +543,7 @@ export const createCartOrder = async (req, res) => {
             orderData,
         );
 
-            await orderConfirmationEmail(
+        await orderConfirmationEmail(
             userFound.FullName,
             adminEmail,
             'Order Confirmation - Shree Venkateswara Agros and Herbs',
@@ -576,7 +576,14 @@ export const createCartINROrder = async (req, res) => {
         } = req.body;
 
         // Validate inputs
-        if (!user || !phoneNumber || !shippingAddress || !expectedDelivery || !items || items.length === 0) {
+        if (
+            !user ||
+            !phoneNumber ||
+            !shippingAddress ||
+            !expectedDelivery ||
+            !items ||
+            items.length === 0
+        ) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required!',
@@ -596,7 +603,9 @@ export const createCartINROrder = async (req, res) => {
         for (const item of items) {
             const product = await Product.findById(item._id);
             if (!product) {
-                return res.status(404).json({ success: false, message: `Product not found: ${item._id}` });
+                return res
+                    .status(404)
+                    .json({ success: false, message: `Product not found: ${item._id}` });
             }
 
             const quantity = item.quantity || 1;
@@ -624,7 +633,7 @@ export const createCartINROrder = async (req, res) => {
         }
 
         // const totalAmount = productTotal;
-        const paymentStatus = razorpayOrderId ? 'Success' : 'Pending';
+        const paymentStatus = 'Pending';
 
         // Create order
         const newOrder = await Order.create({
@@ -671,14 +680,14 @@ export const createCartINROrder = async (req, res) => {
             userFound.FullName,
             userFound.Email,
             'Order Confirmation - Shree Venkateswara Agros and Herbs',
-            orderData
+            orderData,
         );
 
         await orderConfirmationEmail(
             userFound.FullName,
             'svahpl1@gmail.com',
             'Order Confirmation - Shree Venkateswara Agros and Herbs',
-            orderData
+            orderData,
         );
 
         return res.status(200).json({
@@ -686,7 +695,6 @@ export const createCartINROrder = async (req, res) => {
             message: 'Order Placed Successfully!',
             orderId: newOrder._id,
         });
-
     } catch (error) {
         console.error('🔥 Cart INR Order Error:', error);
         res.status(500).json({
@@ -695,4 +703,3 @@ export const createCartINROrder = async (req, res) => {
         });
     }
 };
-
