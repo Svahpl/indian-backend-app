@@ -571,6 +571,7 @@ export const createCartINROrder = async (req, res) => {
             shippingAddress,
             items,
             expectedDelivery,
+            totalAmount,
             razorpayOrderId,
         } = req.body;
 
@@ -622,7 +623,7 @@ export const createCartINROrder = async (req, res) => {
             await product.save();
         }
 
-        const totalAmount = productTotal;
+        // const totalAmount = productTotal;
         const paymentStatus = razorpayOrderId ? 'Success' : 'Pending';
 
         // Create order
