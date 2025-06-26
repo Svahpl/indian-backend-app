@@ -19,6 +19,7 @@ import { deliveryRouter } from './src/router/delevery.router.js';
 import { commentRouter } from './src/router/comment.router.js';
 import Razorpay from 'razorpay';
 import { razorPayRouter } from './src/router/razorpay.router.js';
+import { inddelRouter } from './src/router/Ind-del.router.js';
 
 dotenv.config();
 const app = express();
@@ -95,8 +96,10 @@ app.use('/api/cart', CartRouter);
 app.use('/api/wishlist', WishlistRouter);
 app.use('/api/form', formRouter);
 app.use('/api/charge', deliveryRouter);
+app.use('/api/indcharge',inddelRouter)
 app.use('/api/comment', commentRouter);
 app.use('/api/razorpay', razorPayRouter);
+
 
 app.get('/api/protected', ClerkExpressRequireAuth(), async (req, res) => {
     const userId = req.auth.userId;
