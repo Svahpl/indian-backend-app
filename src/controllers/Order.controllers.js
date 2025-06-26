@@ -415,8 +415,15 @@ export const cancelOrder = async (req, res) => {
 };
 export const indOrder = async (req, res) => {
     try {
-        let { user, phoneNumber, shippingAddress, items, expectedDelivery, razorpayOrderId } =
-            req.body;
+        let {
+            user,
+            phoneNumber,
+            totalAmount,
+            shippingAddress,
+            items,
+            expectedDelivery,
+            razorpayOrderId,
+        } = req.body;
 
         // 🔄 Normalize items
         if (!Array.isArray(items)) {
@@ -462,7 +469,7 @@ export const indOrder = async (req, res) => {
         const totalWeight = quantity * weightPerUnit;
         const productPrice = productFound.price;
         const productTotal = productPrice * totalWeight;
-        const totalAmount = productTotal;
+        // const totalAmount = productTotal;
 
         console.log('💡 Debug: qty =', quantity);
         console.log('💡 Debug: weight per unit =', weightPerUnit);
@@ -493,7 +500,7 @@ export const indOrder = async (req, res) => {
             phoneNumber,
             shippingAddress,
             productTotal,
-            totalAmount,
+            totalAmount: totalAmount,
             paymentStatus,
             expectedDelivery,
         });
