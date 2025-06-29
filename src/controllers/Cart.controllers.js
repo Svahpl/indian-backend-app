@@ -651,8 +651,8 @@ export const createCartINROrder = async (req, res) => {
         });
 
         // Clear user's cart
-        userFound.cart = [];
-        await userFound.save();
+        // userFound.cart = [];
+        // await userFound.save();
 
         // Prepare items for email
         const emailItems = formattedItems.map(item => ({

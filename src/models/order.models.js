@@ -15,7 +15,7 @@ const orderSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-         rzpId: { type: String, required: false },
+        rzpId: { type: String, required: false },
         items: [
             {
                 product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
@@ -41,7 +41,7 @@ const orderSchema = new mongoose.Schema(
         },
         shippingMethod: {
             type: String,
-            enum: ['ship', 'airline'],
+            enum: ['ship', 'airline', 'road'],
         },
         paymentStatus: {
             type: String,

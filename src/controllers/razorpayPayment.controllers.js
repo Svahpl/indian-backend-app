@@ -1,3 +1,4 @@
+// controllers/razorpay.controllers.js
 import { instance } from '../../server.js';
 import crypto from 'crypto';
 import { Payment } from '../models/payment.models.js';
@@ -7,6 +8,7 @@ import { Order } from '../models/order.models.js';
 import { User } from '../models/user.models.js';
 
 const checkout = async (req, res) => {
+    // Expecting req.body.amount in paise (integer)
     if (!req.body || typeof req.body.amount === 'undefined') {
         return res.status(400).json({ error: 'Amount is required' });
     }
@@ -18,22 +20,29 @@ const checkout = async (req, res) => {
         }
 
         const options = {
-            amount: Math.round(amount * 100), // Convert to paise
+            amount: Math.round(amount), // amount already in paise from frontend
             currency: 'INR',
+            payment_capture: 1, // auto-capture
         };
 
         const order = await instance.orders.create(options);
-        console.log('🔹 Order Created:', order);
+        // console.log('🔹 Order Created:', order);
         res.status(200).json({ success: true, order });
     } catch (error) {
-        console.log(`Razorpay checkout error: ${JSON.stringify(error)}`);
-        return res.status(500).json({ error });
+        console.error('Razorpay checkout error:', error?.error?.description || error);
+        return res.status(500).json({ error: error?.error?.description || 'Checkout failed' });
     }
 };
 
 const paymentVerification = async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     console.log('🔹 Payment Verification Initiated');
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+        return res
+            .status(400)
+            .json({ success: false, message: 'Missing payment verification fields' });
+    }
 
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
 
@@ -69,15 +78,14 @@ const paymentVerification = async (req, res) => {
             razorpay_order_id,
             razorpay_payment_id,
             razorpay_signature,
-            order: updatedOrder._id, // if you update your Payment schema to include this
+            order: updatedOrder._id,
         });
 
-        // Send confirmation emails
+        // Optional: Send confirmation emails (uncomment if implemented)
         if (updatedOrder.user) {
             try {
                 const { fullName, email } = updatedOrder.user;
                 const orderNumber = razorpay_order_id;
-
                 await sendOrderConfirmationEmail(fullName, orderNumber, email);
                 await sendNewOrderAdminEmail(razorpay_order_id, fullName, email);
             } catch (emailError) {
@@ -85,6 +93,7 @@ const paymentVerification = async (req, res) => {
             }
         }
 
+        // Redirect to frontend success page
         return res.redirect(`${process.env.FRONTEND_URL}/complete-payment`);
     } catch (error) {
         console.error('❌ Payment Verification Error:', error);
