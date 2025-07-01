@@ -4,4 +4,4 @@ import { AdminVerify } from "../middlewares/Admin.middlewares.js";
 export const deliveryRouter = Router();
 
 deliveryRouter.route("/update-deliverycharge").put(AdminVerify,updatecharge);
-deliveryRouter.route("/getcharge").get(AdminVerify,getcharge);
+deliveryRouter.route("/getcharge").get(getcharge);
