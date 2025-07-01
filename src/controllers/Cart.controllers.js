@@ -43,6 +43,7 @@ export const addCart = async (req, res) => {
             user.cart[existingCartItemIndex].quantity += quantity;
         } else {
             user.cart.push({
+                _id: new mongoose.Types.ObjectId(),
                 productId: productToAdd._id,
                 quantity,
                 weight,
@@ -70,24 +71,25 @@ export const addCart = async (req, res) => {
 
 export const deleteCartItem = async (req, res) => {
     try {
-        // get user and product id
-        const { userId, productId } = req.query;
-        if (!userId || !productId) {
+        const { userId, cartItemId } = req.query; // Use cartItemId instead
+
+        if (!userId || !cartItemId) {
             return res.status(400).json({
                 success: false,
-                message: 'User ID and Product ID are required',
+                message: 'User ID and Cart Item ID are required',
             });
         }
-        // search product inside cart and delete it
+
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             {
                 $pull: {
-                    cart: { productId: productId },
+                    cart: { _id: cartItemId }, // Delete by unique cart item ID
                 },
             },
             { new: true },
         );
+
         if (!updatedUser) {
             return res.status(404).json({
                 success: false,
@@ -98,12 +100,12 @@ export const deleteCartItem = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'Product removed from cart successfully',
-            cart: updatedUser.cart, // Return updated cart
+            cart: updatedUser.cart,
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            success: 'false',
+            success: false,
             message: "Error deleting item from user's cart",
         });
     }
