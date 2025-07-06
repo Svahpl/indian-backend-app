@@ -1,6 +1,7 @@
 import { User } from '../models/user.models.js';
 import welcomeEmail from '../services/welcome.email.js';
 import sendAdminEmail from '../services/emailAdmin.js';
+import { clerkClient } from '@clerk/clerk-sdk-node';
 
 export const Signup = async (req, res) => {
     console.log(req.body);
@@ -84,21 +85,38 @@ export const getAdmin = async (req, res) => {
     }
   };
 
-
 export const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
         console.log('User ID to delete:', id);
 
-        const user = await User.findByIdAndDelete(id);
+        // 1. Find user in your DB
+        const user = await User.findById(id);
         if (!user) {
-            return res.status(404).json({ messege: 'User not found' });
+            return res.status(404).json({ message: 'User not found in DB' });
         }
-        res.status(200).json({ messege: 'User deleted successfully', user });
+
+        // 2. If user was created via Clerk, delete from Clerk
+        if (user.clerkUserId) {
+            try {
+                await clerkClient.users.deleteUser(user.clerkUserId);
+                console.log('Deleted user from Clerk');
+            } catch (clerkError) {
+                console.error('Failed to delete from Clerk:', clerkError);
+                // Optional: continue anyway or return error depending on business logic
+            }
+        }
+
+        // 3. Delete from your DB
+        await User.findByIdAndDelete(id);
+
+        res.status(200).json({ message: 'User deleted successfully from DB' });
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        res.status(500).json({ message: 'Server error while deleting user' });
     }
 };
+
 
 export const EmailByAdmin = async (req, res) => {
     try {
