@@ -5,7 +5,7 @@ import sendAdminEmail from '../services/emailAdmin.js';
 export const Signup = async (req, res) => {
     console.log(req.body);
     const { clerkUserId, FirstName, lastName, Email, Password, Token, ProfileImage } = req.body;
-    if (!FirstName || !lastName || !Email) {
+    if (!Email) {
         return res.status(400).json({ msg: 'all detail required' });
     }
     const FullName = `${FirstName} ${lastName}`;
