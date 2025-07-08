@@ -2,6 +2,9 @@ import { User } from '../models/user.models.js';
 import welcomeEmail from '../services/welcome.email.js';
 import sendAdminEmail from '../services/emailAdmin.js';
 import { clerkClient } from '@clerk/clerk-sdk-node';
+import { createClerkClient } from '@clerk/backend';
+
+const newClerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 export const Signup = async (req, res) => {
     console.log(req.body);
@@ -59,64 +62,69 @@ export const getAllUser = async (req, res) => {
 
 export const getUser = async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId)
+        const user = await User.findById(req.params.userId);
         console.log(user);
         if (!user) {
-            return res.status(400).json({ msg: "User not found" });
+            return res.status(400).json({ msg: 'User not found' });
         }
-        return res.status(200).json({ message: "User found", user });
+        return res.status(200).json({ message: 'User found', user });
     } catch (error) {
-        console.error("Error in getUser:", error);
-        return res.status(500).json({ msg: "Internal server error", error });
+        console.error('Error in getUser:', error);
+        return res.status(500).json({ msg: 'Internal server error', error });
     }
-  };
+};
 
 export const getAdmin = async (req, res) => {
     try {
-        const user = await User.findById(req.user.userId)
+        const user = await User.findById(req.user.userId);
         console.log(user);
         if (!user) {
-            return res.status(400).json({ msg: "User not found" });
+            return res.status(400).json({ msg: 'User not found' });
         }
-        return res.status(200).json({ message: "User found", user });
+        return res.status(200).json({ message: 'User found', user });
     } catch (error) {
-        console.error("Error in getUser:", error);
-        return res.status(500).json({ msg: "Internal server error", error });
+        console.error('Error in getUser:', error);
+        return res.status(500).json({ msg: 'Internal server error', error });
     }
-  };
+};
 
 export const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
         console.log('User ID to delete:', id);
 
-        // 1. Find user in your DB
+        // 1. Find the user in MongoDB
         const user = await User.findById(id);
         if (!user) {
             return res.status(404).json({ message: 'User not found in DB' });
         }
 
-        // 2. If user was created via Clerk, delete from Clerk
-        if (user.clerkUserId) {
-            try {
-                await clerkClient.users.deleteUser(user.clerkUserId);
-                console.log('Deleted user from Clerk');
-            } catch (clerkError) {
-                console.error('Failed to delete from Clerk:', clerkError);
-                // Optional: continue anyway or return error depending on business logic
-            }
+        // 2. Check if user has a Clerk ID
+        if (!user.clerkUserId) {
+            return res.status(400).json({ message: 'User does not have a Clerk ID' });
         }
 
-        // 3. Delete from your DB
-        await User.findByIdAndDelete(id);
+        // 3. Delete user from Clerk
+        try {
+            await clerkClient.users.deleteUser(user.clerkUserId);
+            console.log('Deleted user from Clerk');
+        } catch (clerkError) {
+            console.error('Failed to delete from Clerk:', clerkError);
+            return res
+                .status(500)
+                .json({ message: 'Failed to delete user from Clerk', error: clerkError });
+        }
 
-        res.status(200).json({ message: 'User deleted successfully from DB' });
+        // 4. If Clerk deletion succeeds, delete from MongoDB
+        await User.findByIdAndDelete(id);
+        console.log('Deleted user from MongoDB');
+
+        return res.status(200).json({ message: 'User deleted from Clerk and MongoDB' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error while deleting user' });
+        console.error('Server error while deleting user:', error);
+        return res.status(500).json({ message: 'Server error while deleting user', error });
     }
 };
-
 
 export const EmailByAdmin = async (req, res) => {
     try {

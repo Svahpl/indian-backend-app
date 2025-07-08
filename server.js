@@ -21,7 +21,7 @@ import Razorpay from 'razorpay';
 import { razorPayRouter } from './src/router/razorpay.router.js';
 import { inddelRouter } from './src/router/Ind-del.router.js';
 import { saleRouter } from './src/router/ind-sale.router.js';
-
+import { createClerkClient } from '@clerk/backend';
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
@@ -29,7 +29,12 @@ const port = process.env.PORT;
 // ========================== CORS Setup =========================== //
 
 const corsOptions = {
-    origin: ['https://www.svahpl.com','https://admin-svah.vercel.app','https://www.svahpl.in','https://admin-indian-panel.vercel.app',],
+    origin: [
+        'https://www.svahpl.com',
+        'https://admin-svah.vercel.app',
+        'https://www.svahpl.in',
+        'https://admin-indian-panel.vercel.app',
+    ],
     credentials: true,
     methods: 'GET, POST, DELETE, PATCH, HEAD, PUT, OPTIONS',
     allowedHeaders: [
@@ -65,6 +70,8 @@ const devCorsOptions = {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+
 app.use(cors(corsOptions));
 //
 
@@ -97,11 +104,10 @@ app.use('/api/cart', CartRouter);
 app.use('/api/wishlist', WishlistRouter);
 app.use('/api/form', formRouter);
 app.use('/api/charge', deliveryRouter);
-app.use('/api/indcharge',inddelRouter)
+app.use('/api/indcharge', inddelRouter);
 app.use('/api/comment', commentRouter);
 app.use('/api/razorpay', razorPayRouter);
-app.use('/api/sale',saleRouter)
-
+app.use('/api/sale', saleRouter);
 
 app.get('/api/protected', ClerkExpressRequireAuth(), async (req, res) => {
     const userId = req.auth.userId;
